@@ -1,0 +1,9 @@
+.classpath
+.project
+.settings/
+.DS_Store
+/bin
+.git
+/target
+org/
+.nojekyll
