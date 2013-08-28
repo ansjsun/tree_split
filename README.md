@@ -1,7 +1,7 @@
 TreeSplitWord 一个tire树结构的分词
 ==================
 
-maven
+##maven
 
 ````
 <repositories>
@@ -21,7 +21,11 @@ maven
 	</dependencies>
 
 ````
+Download jar
 
+````
+https://github.com/ansjsun/mvn-repo/tree/master/org/ansj/tree_split
+````
 
 一个trie树数据结构的分词
 没有什么新意.使用方便
