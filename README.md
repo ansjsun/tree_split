@@ -1,6 +1,28 @@
 TreeSplitWord 一个tire树结构的分词
 ==================
 
+maven
+
+````
+<repositories>
+		<repository>
+			<id>mvn-repo</id>
+			<url>https://raw.github.com/ansjsun/mvn-repo/master</url>
+		</repository>
+	</repositories>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>org.ansj</groupId>
+			<artifactId>tree_split</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+	</dependencies>
+
+````
+
+
 一个trie树数据结构的分词
 没有什么新意.使用方便
 
