@@ -7,18 +7,17 @@ TreeSplitWord 一个tire树结构的分词
 <repositories>
 		<repository>
 			<id>mvn-repo</id>
-			<url>https://raw.github.com/ansjsun/mvn-repo/master</url>
+			<url>http://ansjsun.github.io/mvn-repo/</url>
 		</repository>
 	</repositories>
 
-
 	<dependencies>
-		<dependency>
-			<groupId>org.ansj</groupId>
-			<artifactId>tree_split</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.ansj</groupId>
+            <artifactId>tree_split</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+    </dependencies>
 
 ````
 Download jar
