@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -254,7 +255,7 @@ public class IOUtil {
         return hm;
     }
 
-    public static <K, V> void writeMap(HashMap<K, V> hm, String path, String charEncoding)
+    public static <K, V> void writeMap(Map<K, V> hm, String path, String charEncoding)
                                                                                           throws IOException {
         Iterator<Entry<K, V>> iterator = hm.entrySet().iterator();
         FileOutputStream fos = null;
