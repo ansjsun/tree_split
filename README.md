@@ -1,15 +1,9 @@
 TreeSplitWord 一个tire树结构的分词
 ==================
 
-##maven
+##maven(中央库)
 
 ````
-<repositories>
-		<repository>
-			<id>mvn-repo</id>
-			<url>http://ansjsun.github.io/mvn-repo/</url>
-		</repository>
-	</repositories>
 
 	<dependencies>
         <dependency>
@@ -23,7 +17,7 @@ TreeSplitWord 一个tire树结构的分词
 Download jar
 
 ````
-https://github.com/ansjsun/mvn-repo/tree/master/org/ansj/tree_split
+http://search.maven.org/#search|ga|1|a%3A%22tree_split%22
 ````
 
 一个trie树数据结构的分词
