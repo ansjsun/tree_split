@@ -4,7 +4,7 @@
 	<groupId>org.ansj</groupId>
 	<artifactId>tree_split</artifactId>
 	<name>tree_split</name>
-	<version>1.0.1</version>
+	<version>1.1.1</version>
 	<description>it is tire tree  ! </description>
 	<url>https://github.com/ansjsun/TreeSplitWord</url>
 	<licenses>
@@ -17,7 +17,7 @@
 
 	<scm>
 		<connection>scm:git:git@github.com:ansjsun/TreeSplitWord.git</connection>
-		<developerConnection>scm:git:git@github.com:ansjsun/TreeSplitWord.git</developerConnection>
+		<developerConnection>scm:git@github.com:ansjsun/tree_split.git</developerConnection>
 		<url>git@github.com:ansjsun/TreeSplitWord.git</url>
 	</scm>
 
