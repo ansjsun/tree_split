@@ -2,7 +2,6 @@ package love.cq.splitWord;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Arrays;
 
 import love.cq.domain.Forest;
 import love.cq.domain.WoodInterface;
@@ -27,7 +26,13 @@ public class GetWord {
 	boolean isBack = false;
 
 	public GetWord(Forest forest, String content) {
-		this.chars = Arrays.copyOf(content.toCharArray(), content.length() + 1);
+		this.chars = content.toCharArray();
+		this.forest = forest;
+		this.branch = forest;
+	}
+
+	public GetWord(Forest forest, char[] chars) {
+		this.chars = chars;
 		this.forest = forest;
 		this.branch = forest;
 	}
@@ -82,8 +87,12 @@ public class GetWord {
 	}
 
 	private String frontWords() {
-		for (; this.i < this.chars.length; this.i = (this.i + 1)) {
-			this.branch = this.branch.get(this.chars[this.i]);
+		for (; this.i < this.chars.length + 1; this.i++) {
+			if (i == chars.length) {
+				this.branch = null;
+			} else {
+				this.branch = this.branch.get(this.chars[this.i]);
+			}
 			if (this.branch == null) {
 				this.branch = this.forest;
 				if (this.isBack) {
@@ -130,8 +139,7 @@ public class GetWord {
 						this.str = EMPTYSTRING;
 					}
 
-					if ((this.str.length() != 0) && (this.i + 1 < this.chars.length) && (isE(this.str.charAt(this.str.length() - 1)))
-							&& (isE(this.chars[(this.i + 1)]))) {
+					if ((this.str.length() != 0) && (this.i + 1 < this.chars.length) && (isE(this.str.charAt(this.str.length() - 1))) && (isE(this.chars[(this.i + 1)]))) {
 						this.str = EMPTYSTRING;
 					}
 					this.param = this.branch.getParams();
@@ -155,20 +163,8 @@ public class GetWord {
 	}
 
 	public boolean isE(char c) {
-		if ((c >= 'a') && (c <= 'z')) {
+		if (c == '.' || ((c >= 'a') && (c <= 'z'))) {
 			return true;
-		}
-		switch (c) {
-		case '.':
-			return true;
-//		case '-':
-//			return true;
-//		case '/':
-//			return true;
-//		case '#':
-//			return true;
-//		case '?':
-//			return true;
 		}
 		return false;
 	}
@@ -190,13 +186,14 @@ public class GetWord {
 		}
 		return this.param[i];
 	}
-	
+
 	/**
 	 * 得到全部参数
+	 * 
 	 * @return
 	 */
-    public String[] getParams(){
-	    return this.param ;
+	public String[] getParams() {
+		return this.param;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -209,20 +206,20 @@ public class GetWord {
 		/**
 		 * 删除一个单词
 		 */
-		Library.removeWord(forest, "中国");
+		Library.insertWord(forest, "中国");
 		/**
 		 * 增加一个新词
 		 */
 		Library.insertWord(forest, "中国人");
-		String content = "Android--中国";
+		String content = "Android--中国人";
 		content = StringUtil.rmHtmlTag(content);
 
 		for (int i = 0; i < 1; i++) {
-			GetWord udg = forest.getWord(content.toLowerCase());
+			GetWord udg = forest.getWord(content.toLowerCase().toCharArray());
 
 			String temp = null;
 			while ((temp = udg.getFrontWords()) != null) {
-					System.out.println(temp + "\t\t" + udg.getParam(0) + "\t\t" + udg.getParam(2));
+				System.out.println(temp + "\t\t" + udg.getParam(0) + "\t\t" + udg.getParam(2));
 			}
 		}
 		System.out.println(System.currentTimeMillis() - start);

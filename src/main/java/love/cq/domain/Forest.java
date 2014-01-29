@@ -89,6 +89,16 @@ public class Forest implements WoodInterface {
 	}
 	
 	/**
+	 * 得到一个分词对象
+	 * 
+	 * @param content
+	 * @return
+	 */
+	public GetWord getWord(char[] chars) {
+		return new GetWord(this, chars);
+	}
+	
+	/**
 	 * 清空树释放内存
 	 */
 	public void clear(){
