@@ -2,251 +2,267 @@ package love.cq.domain;
 
 import java.util.Arrays;
 
+import love.cq.splitWord.GetWord;
+import love.cq.splitWord.SmartGetWord;
+
 /**
- * 一个小树,和Forest的区别是.这个在首字也是用二分查找,意味着,更节省内存.但是在构造和查找的时候都慢一点,一般应用在.词少.或者临时词典中.
- * 在ansj分词中这个应用是在自适应分词
+ * 一个小树,和Forest的区别是.这个在首字也是用二分查找,做过一次优化.达到到达一定量级自动扩展为hash定位 在ansj分词中这个应用是在自适应分词
  * 
  * @author ansj
  * 
  */
 public class SmartForest<T> implements Comparable<SmartForest<T>> {
 
-    private static final int MAX_SIZE = 65536;
+	private static final int MAX_SIZE = 65536;
 
-    private double rate = 0.9;
+	private double rate = 0.9;
 
-    /**
-     * status 此字的状态1，继续 2，是个词语但是还可以继续 ,3确定 nature 词语性质
-     */
-    public SmartForest<T>[] branches = null;
-    private char c;
-    // 状态
-    private byte status = 1;
-    // 单独查找出来的对象
-    SmartForest<T> branch = null;
-    // 词典后的参数
-    private T param = null;
+	/**
+	 * status 此字的状态1，继续 2，是个词语但是还可以继续 ,3确定 nature 词语性质
+	 */
+	public SmartForest<T>[] branches = null;
+	private char c;
+	// 状态
+	private byte status = 1;
+	// 单独查找出来的对象
+	SmartForest<T> branch = null;
+	// 词典后的参数
+	private T param = null;
 
-    // root
-    public SmartForest() {
-    }
+	// root
+	public SmartForest() {
+	}
 
-    // 首位直接数组定位
-    @SuppressWarnings("unchecked")
-    public SmartForest(double rate) {
-        branches = new SmartForest[MAX_SIZE];
-        this.rate = rate;
-    }
+	// 首位直接数组定位
+	@SuppressWarnings("unchecked")
+	public SmartForest(double rate) {
+		branches = new SmartForest[MAX_SIZE];
+		this.rate = rate;
+	}
 
-    // temp branch
-    private SmartForest(char c) {
-        this.c = c;
-    }
+	// temp branch
+	private SmartForest(char c) {
+		this.c = c;
+	}
 
-    /**
-     * 增加子页节点
-     * 
-     * @param branch
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    private SmartForest<T> add(SmartForest<T> branch) {
-        if (branches == null) {
-            branches = new SmartForest[0];
-        }
-        int bs = get(branch.getC());
-        if (bs > -1) {
-            if (this.branches[bs] == null) {
-                this.branches[bs] = branch;
-            }
-            this.branch = this.branches[bs];
-            switch (branch.getStatus()) {
-                case -1:
-                    this.branch.setStatus(1);
-                    break;
-                case 1:
-                    if (this.branch.getStatus() == 3) {
-                        this.branch.setStatus(2);
-                    }
-                    break;
-                case 3:
-                    if (this.branch.getStatus() != 3) {
-                        this.branch.setStatus(2);
-                    }
-                    this.branch.setParam(branch.getParam());
-            }
-            return this.branch;
-        }
+	/**
+	 * 增加子页节点
+	 * 
+	 * @param branch
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private SmartForest<T> add(SmartForest<T> branch) {
+		if (branches == null) {
+			branches = new SmartForest[0];
+		}
+		int bs = get(branch.getC());
+		if (bs > -1) {
+			if (this.branches[bs] == null) {
+				this.branches[bs] = branch;
+			}
+			this.branch = this.branches[bs];
+			switch (branch.getStatus()) {
+			case -1:
+				this.branch.setStatus(1);
+				break;
+			case 1:
+				if (this.branch.getStatus() == 3) {
+					this.branch.setStatus(2);
+				}
+				break;
+			case 3:
+				if (this.branch.getStatus() != 3) {
+					this.branch.setStatus(2);
+				}
+				this.branch.setParam(branch.getParam());
+			}
+			return this.branch;
+		}
 
-        if (bs < 0) {
-            //如果数组内元素接近于最大值直接数组定位，rate是内存和速度的一个平衡
-            if (branches != null && branches.length >= MAX_SIZE * rate) {
-                SmartForest<T>[] tempBranches = new SmartForest[MAX_SIZE];
-                for (SmartForest<T> b : branches) {
-                    tempBranches[b.getC()] = b;
-                }
-                tempBranches[branch.getC()] = branch;
-                branches = null;
-                branches = tempBranches;
-            } else {
-                SmartForest<T>[] newBranches = new SmartForest[branches.length + 1];
-                int insert = -(bs + 1);
-                System.arraycopy(this.branches, 0, newBranches, 0, insert);
-                System.arraycopy(branches, insert, newBranches, insert + 1, branches.length
-                                                                            - insert);
-                newBranches[insert] = branch;
-                this.branches = newBranches;
-            }
-        }
-        return branch;
-    }
+		if (bs < 0) {
+			// 如果数组内元素接近于最大值直接数组定位，rate是内存和速度的一个平衡
+			if (branches != null && branches.length >= MAX_SIZE * rate) {
+				SmartForest<T>[] tempBranches = new SmartForest[MAX_SIZE];
+				for (SmartForest<T> b : branches) {
+					tempBranches[b.getC()] = b;
+				}
+				tempBranches[branch.getC()] = branch;
+				branches = null;
+				branches = tempBranches;
+			} else {
+				SmartForest<T>[] newBranches = new SmartForest[branches.length + 1];
+				int insert = -(bs + 1);
+				System.arraycopy(this.branches, 0, newBranches, 0, insert);
+				System.arraycopy(branches, insert, newBranches, insert + 1, branches.length - insert);
+				newBranches[insert] = branch;
+				this.branches = newBranches;
+			}
+		}
+		return branch;
+	}
 
-    public SmartForest(char c, int status, T param) {
-        this.c = c;
-        this.status = (byte) status;
-        this.param = param;
-    }
+	public SmartForest(char c, int status, T param) {
+		this.c = c;
+		this.status = (byte) status;
+		this.param = param;
+	}
 
-    public int get(char c) {
-        if (branches == null)
-            return -1;
-        if (branches.length == MAX_SIZE) {
-            return c;
-        }
-        int i = Arrays.binarySearch(this.branches, new SmartForest<T>(c));
-        return i;
-    }
+	public int get(char c) {
+		if (branches == null)
+			return -1;
+		if (branches.length == MAX_SIZE) {
+			return c;
+		}
+		int i = Arrays.binarySearch(this.branches, new SmartForest<T>(c));
+		return i;
+	}
 
-    /**
-     * 二分查找是否包含
-     * 
-     * @param c
-     * @return
-     */
-    public boolean contains(char c) {
-        if (this.branches == null) {
-            return false;
-        }
-        return Arrays.binarySearch(this.branches, c) > -1;
-    }
+	public SmartForest<T> getBranch(char c) {
+		// TODO Auto-generated method stub
+		int index = get(c);
+		if (index < 0) {
+			return null;
+		} else {
+			return branches[index];
+		}
+	}
 
-    public int compareTo(char c) {
-        if (this.c > c)
-            return 1;
-        if (this.c < c) {
-            return -1;
-        }
-        return 0;
-    }
+	/**
+	 * 二分查找是否包含
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public boolean contains(char c) {
+		if (this.branches == null) {
+			return false;
+		}
+		return Arrays.binarySearch(this.branches, c) > -1;
+	}
 
-    public boolean equals(char c) {
-        return this.c == c;
-    }
+	public int compareTo(char c) {
+		if (this.c > c)
+			return 1;
+		if (this.c < c) {
+			return -1;
+		}
+		return 0;
+	}
 
-    @Override
-    public int hashCode() {
-        return this.c;
-    }
+	public boolean equals(char c) {
+		return this.c == c;
+	}
 
-    public byte getStatus() {
-        return this.status;
-    }
+	@Override
+	public int hashCode() {
+		return this.c;
+	}
 
-    public void setStatus(int status) {
-        this.status = (byte) status;
-    }
+	public byte getStatus() {
+		return this.status;
+	}
 
-    public char getC() {
-        return this.c;
-    }
+	public void setStatus(int status) {
+		this.status = (byte) status;
+	}
 
-    public T getParam() {
-        return this.param;
-    }
+	public char getC() {
+		return this.c;
+	}
 
-    public void setParam(T param) {
-        this.param = param;
-    }
+	public T getParam() {
+		return this.param;
+	}
 
-    /**
-     * 增加新词
-     * 
-     * @param value
-     */
-    public void add(String keyWord, T t) {
-        SmartForest<T> tempBranch = this;
-        for (int i = 0; i < keyWord.length(); i++) {
-            if (keyWord.length() == i + 1) {
-                tempBranch.add(new SmartForest<T>(keyWord.charAt(i), 3, t));
-            } else {
-                tempBranch.add(new SmartForest<T>(keyWord.charAt(i), 1, null));
-            }
-            tempBranch = tempBranch.branches[tempBranch.get(keyWord.charAt(i))];
-        }
-    }
+	public void setParam(T param) {
+		this.param = param;
+	}
 
-    public int compareTo(SmartForest<T> o) {
-        // TODO Auto-generated method stub
-        if (this.c > o.c)
-            return 1;
-        if (this.c < o.c) {
-            return -1;
-        }
-        return 0;
-    }
+	/**
+	 * 增加新词
+	 * 
+	 * @param value
+	 */
+	public void add(String keyWord, T t) {
+		SmartForest<T> tempBranch = this;
+		for (int i = 0; i < keyWord.length(); i++) {
+			if (keyWord.length() == i + 1) {
+				tempBranch.add(new SmartForest<T>(keyWord.charAt(i), 3, t));
+			} else {
+				tempBranch.add(new SmartForest<T>(keyWord.charAt(i), 1, null));
+			}
+			tempBranch = tempBranch.branches[tempBranch.get(keyWord.charAt(i))];
+		}
+	}
 
-    /**
-     * 根据一个词获得所取的参数,没有就返回null
-     * 
-     * @param keyWord
-     */
-    public SmartForest<T> getBranch(String keyWord) {
-        SmartForest<T> tempBranch = this;
-        int index = 0;
-        for (int j = 0; j < keyWord.length(); j++) {
-            index = tempBranch.get(keyWord.charAt(j));
-            if (index < 0) {
-                return null;
-            }
-            if ((tempBranch = tempBranch.branches[index]) == null) {
-                return null;
-            }
+	public int compareTo(SmartForest<T> o) {
+		// TODO Auto-generated method stub
+		if (this.c > o.c)
+			return 1;
+		if (this.c < o.c) {
+			return -1;
+		}
+		return 0;
+	}
 
-        }
-        return tempBranch;
-    }
+	/**
+	 * 根据一个词获得所取的参数,没有就返回null
+	 * 
+	 * @param keyWord
+	 */
+	public SmartForest<T> getBranch(String keyWord) {
+		SmartForest<T> tempBranch = this;
+		int index = 0;
+		for (int j = 0; j < keyWord.length(); j++) {
+			index = tempBranch.get(keyWord.charAt(j));
+			if (index < 0) {
+				return null;
+			}
+			if ((tempBranch = tempBranch.branches[index]) == null) {
+				return null;
+			}
 
-    /**
-     * 根据一个词获得所取的参数,没有就返回null
-     * 
-     * @param chars
-     */
-    public SmartForest<T> getBranch(char[] chars) {
-        SmartForest<T> tempBranch = this;
-        int index = 0;
-        for (int j = 0; j < chars.length; j++) {
-            index = tempBranch.get(chars[j]);
-            if (index < 0) {
-                return null;
-            }
-            if ((tempBranch = tempBranch.branches[index]) == null) {
-                return null;
-            }
+		}
+		return tempBranch;
+	}
 
-        }
-        return tempBranch;
-    }
+	/**
+	 * 根据一个词获得所取的参数,没有就返回null
+	 * 
+	 * @param chars
+	 */
+	public SmartForest<T> getBranch(char[] chars) {
+		SmartForest<T> tempBranch = this;
+		int index = 0;
+		for (int j = 0; j < chars.length; j++) {
+			index = tempBranch.get(chars[j]);
+			if (index < 0) {
+				return null;
+			}
+			if ((tempBranch = tempBranch.branches[index]) == null) {
+				return null;
+			}
 
-    public static void main(String[] args) {
-        SmartForest<Integer> sf = new SmartForest<Integer>(0.8);
-        sf.add("java", 1);
-        sf.add("php", 2);
-        sf.add("python", 3);
-        sf.add("ruby", 4);
-        sf.add(".net", 5);
+		}
+		return tempBranch;
+	}
 
-        SmartForest<Integer> branch2 = sf.getBranch("php");
-        System.out.println(branch2.getParam());
-    }
+	public static void main(String[] args) {
+		SmartForest<Integer> sf = new SmartForest<Integer>(0.8);
+		sf.add("java", 1);
+		sf.add("php", 2);
+		sf.add("python", 3);
+		sf.add("ruby", 4);
+		sf.add(".net", 5);
+
+		SmartForest<Integer> branch2 = sf.getBranch("php");
+		System.out.println(branch2.getParam());
+	}
+
+	public SmartGetWord<T> getWord(char[] chars) {
+		// TODO Auto-generated method stub
+		return new SmartGetWord<T>(this, chars);
+	}
 
 }
