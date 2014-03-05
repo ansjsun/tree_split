@@ -2,7 +2,6 @@ package love.cq.domain;
 
 import java.util.Arrays;
 
-import love.cq.splitWord.GetWord;
 import love.cq.splitWord.SmartGetWord;
 
 /**
