@@ -110,7 +110,6 @@ public class GetWord {
 						this.root += 1;
 						this.i = this.root;
 					} else {
-						this.offe = (this.tempOffe + this.root);
 						this.i = (this.root + this.tempOffe);
 						this.root = this.i;
 					}
@@ -123,6 +122,7 @@ public class GetWord {
 				}
 				this.i = this.root;
 				this.root += 1;
+				this.offe = this.root ;
 			} else {
 				switch (this.branch.getStatus()) {
 				case 2:
@@ -131,7 +131,7 @@ public class GetWord {
 					this.param = this.branch.getParams();
 					break;
 				case 3:
-					this.offe = (this.tempOffe + this.root);
+					this.offe = this.root ;
 					this.str = new String(this.chars, this.root, this.i - this.root + 1);
 					String temp = this.str;
 
