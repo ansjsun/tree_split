@@ -96,6 +96,7 @@ public class GetWord {
 			if (this.branch == null) {
 				this.branch = this.forest;
 				if (this.isBack) {
+					this.offe = this.root;
 					this.str = new String(this.chars, this.root, this.tempOffe);
 
 					if ((this.root > 0) && (isE(this.chars[(this.root - 1)])) && (isE(this.str.charAt(0)))) {
@@ -122,7 +123,6 @@ public class GetWord {
 				}
 				this.i = this.root;
 				this.root += 1;
-				this.offe = this.root ;
 			} else {
 				switch (this.branch.getStatus()) {
 				case 2:
@@ -131,7 +131,7 @@ public class GetWord {
 					this.param = this.branch.getParams();
 					break;
 				case 3:
-					this.offe = this.root ;
+					this.offe = this.root;
 					this.str = new String(this.chars, this.root, this.i - this.root + 1);
 					String temp = this.str;
 
@@ -139,7 +139,8 @@ public class GetWord {
 						this.str = EMPTYSTRING;
 					}
 
-					if ((this.str.length() != 0) && (this.i + 1 < this.chars.length) && (isE(this.str.charAt(this.str.length() - 1))) && (isE(this.chars[(this.i + 1)]))) {
+					if ((this.str.length() != 0) && (this.i + 1 < this.chars.length) && (isE(this.str.charAt(this.str.length() - 1)))
+							&& (isE(this.chars[(this.i + 1)]))) {
 						this.str = EMPTYSTRING;
 					}
 					this.param = this.branch.getParams();
